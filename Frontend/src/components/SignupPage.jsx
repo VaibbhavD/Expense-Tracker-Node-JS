@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -12,9 +13,17 @@ const SignUp = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    await axios.post("http://localhost:4000/add-user", {
+      formData,
+    });
     alert("Form submitted successfully!");
+    setFormData({
+      name: "",
+      email: "",
+      password: "",
+    });
     // Add logic to handle form submission
   };
 
