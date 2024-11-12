@@ -15,10 +15,11 @@ const SignUp = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await axios.post("http://localhost:4000/add-user", {
+    const res = await axios.post("http://localhost:4000/add-user", {
       formData,
     });
-    alert("Form submitted successfully!");
+    console.log(res.data.message);
+    alert(res.data.message);
     setFormData({
       name: "",
       email: "",

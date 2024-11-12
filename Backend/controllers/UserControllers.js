@@ -4,11 +4,17 @@ exports.AddNewUser = async (req, res) => {
   try {
     // Extract `name` and `email` from the request body
     const { name, email, password } = req.body.formData;
-    console.log(req.body.formData);
+
+    const existingUser = await User.findOne({ where: { email } });
+    if (existingUser) {
+      return res
+        .status(200)
+        .json({ message: "User already exists with this email." });
+    }
 
     // Validate input
     if (!name || !email || !password) {
-      return res.status(200).json({ error: "Name and email are required" });
+      return res.status(200).json({ message: "Name and email are required" });
     }
 
     // Create a new user in the database
