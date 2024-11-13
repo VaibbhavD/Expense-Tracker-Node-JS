@@ -18,7 +18,7 @@ const SignUp = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await axios.post("http://localhost:4000/add-user", {
+    const res = await axios.post("http://localhost:4000/signup", {
       formData,
     });
     console.log(res.data.message);
