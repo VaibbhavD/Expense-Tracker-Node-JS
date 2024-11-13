@@ -1,4 +1,5 @@
 const { User } = require("../models/db");
+const bcrypt = require("bcryptjs");
 
 exports.SignUp = async (req, res) => {
   try {
@@ -14,14 +15,19 @@ exports.SignUp = async (req, res) => {
 
     // Validate input
     if (!name || !email || !password) {
-      return res.status(200).json({ message: "Name and email are required" });
+      return res
+        .status(200)
+        .json({ message: "Please Enter All Creditantional" });
     }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashPassword = await bcrypt.hash(password, salt);
 
     // Create a new user in the database
     const newUser = await User.create({
       name,
       email,
-      password,
+      password: hashPassword,
     });
 
     // Send a success response with the new user's data
