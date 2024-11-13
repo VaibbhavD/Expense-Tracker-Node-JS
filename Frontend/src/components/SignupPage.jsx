@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router";
 import axios from "axios";
 
 const SignUp = () => {
@@ -7,6 +8,8 @@ const SignUp = () => {
     email: "",
     password: "",
   });
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -111,7 +114,12 @@ const SignUp = () => {
           <div className="mt-1 text-sm text-center text-gray-500">
             <p>
               Already have an Account?{" "}
-              <span className="text-blue-500 cursor-pointer">Login</span>
+              <span
+                className="text-blue-500 cursor-pointer"
+                onClick={() => navigate("/login")}
+              >
+                Login
+              </span>
             </p>
           </div>
         </form>
