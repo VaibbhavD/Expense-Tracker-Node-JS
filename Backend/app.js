@@ -3,7 +3,7 @@ const bodyparser = require("body-parser");
 const cors = require("cors");
 
 const { sequelize } = require("./models/db");
-const { AddNewUser } = require("./controllers/UserControllers");
+const { SignUp, Login } = require("./controllers/UserControllers");
 
 const app = Express();
 
@@ -16,7 +16,8 @@ app.get("/", (req, res) => {
   res.send("Hello World");
 });
 
-app.post("/add-user", AddNewUser);
+app.post("/signup", SignUp);
+app.post("/login", Login);
 
 // Sync the database and start the server
 sequelize
