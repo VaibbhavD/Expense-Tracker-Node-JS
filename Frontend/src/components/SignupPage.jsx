@@ -108,6 +108,12 @@ const SignUp = () => {
               Sign Up
             </button>
           </div>
+          <div className="mt-1 text-sm text-center text-gray-500">
+            <p>
+              Already have an Account?{" "}
+              <span className="text-blue-500 cursor-pointer">Login</span>
+            </p>
+          </div>
         </form>
       </div>
     </div>
