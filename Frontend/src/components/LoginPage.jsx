@@ -1,12 +1,15 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router";
 import axios from "axios";
+import Context from "../context/store";
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+
+  const { login } = useContext(Context);
 
   const navigate = useNavigate();
 
@@ -20,12 +23,12 @@ const LoginPage = () => {
     const res = await axios.post("http://localhost:4000/login", {
       formData,
     });
-    alert(res.data.message);
+    if (res.status == 200) {
+      login();
+      alert(res.data.message);
+      navigate("/expense");
+    }
     console.log(res.data);
-    setFormData({
-      email: "",
-      password: "",
-    });
     // Add logic to handle form submission
   };
 
@@ -33,7 +36,7 @@ const LoginPage = () => {
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
         <h2 className="text-2xl font-bold mb-6 text-gray-700 text-center">
-          Sign Up
+          Login
         </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Email Field */}
