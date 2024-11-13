@@ -17,11 +17,11 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await axios.post("http://localhost:4000/add-user", {
+    const res = await axios.post("http://localhost:4000/login", {
       formData,
     });
-    console.log(res.data.message);
     alert(res.data.message);
+    console.log(res.data);
     setFormData({
       email: "",
       password: "",
