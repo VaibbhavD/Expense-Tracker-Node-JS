@@ -1,4 +1,4 @@
-const { User } = require("../models/db");
+const { User, Expenses } = require("../models/db");
 const bcrypt = require("bcryptjs");
 
 exports.SignUp = async (req, res) => {
@@ -16,7 +16,7 @@ exports.SignUp = async (req, res) => {
     // Validate input
     if (!name || !email || !password) {
       return res
-        .status(200)
+        .status(401)
         .json({ message: "Please Enter All Creditantional" });
     }
 
@@ -67,5 +67,26 @@ exports.Login = async (req, res) => {
     return res
       .status(500)
       .json({ message: "An error occurred while logging in" });
+  }
+};
+
+exports.AddExpense = async (req, res) => {
+  try {
+    console.log(req.body);
+    const { amount, description, category } = req.body;
+
+    if (!amount || !description || !category) {
+      res.status(401).json({ message: "Please Enter Valid Information" });
+    }
+
+    const expense = await Expenses.create({
+      amount,
+      description,
+      category,
+    });
+    res.status(200).json({ message: "Expense Added Successfully", expense });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "An error occured while adding the user" });
   }
 };
