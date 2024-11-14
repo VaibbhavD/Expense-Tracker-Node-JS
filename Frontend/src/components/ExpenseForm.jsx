@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 
 const ExpenseForm = () => {
   const [formData, setFormData] = useState({
@@ -6,21 +7,25 @@ const ExpenseForm = () => {
     description: "",
     category: "",
   });
-  const [expenses, setExpenses] = useState([
-    { amount: 100, description: "auixhxxb", category: "Mobile" },
-  ]);
+  const [expenses, setExpenses] = useState([]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setExpenses([...expenses, formData]);
-    console.log("Expense data submitted:", formData);
-    // Add logic to send form data to your backend or state management
-    setFormData({ amount: "", description: "", category: "" });
+    const res = await axios.post("http://localhost:4000/add-expense", formData);
+    if (res.status === 200) {
+      alert("Expense Added");
+      setExpenses([...expenses, formData]);
+      console.log("Expense data submitted:", formData);
+      // Add logic to send form data to your backend or state management
+      setFormData({ amount: "", description: "", category: "" });
+    } else {
+      alert("Something Went Wrong");
+    }
   };
 
   return (
