@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import SignUp from "./components/SignupPage";
 import LoginPage from "./components/LoginPage";
@@ -7,7 +7,15 @@ import "./App.css";
 import Context from "./context/store";
 
 function App() {
-  const { isLoggedIn } = useContext(Context);
+  const { isLoggedIn, setIsLoggedIn } = useContext(Context);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      setIsLoggedIn(true);
+    }
+  }, []);
 
   return (
     <BrowserRouter>
