@@ -19,8 +19,8 @@ const ExpenseForm = () => {
     const res = await axios.post("http://localhost:4000/add-expense", formData);
     if (res.status === 200) {
       alert("Expense Added");
-      setExpenses([...expenses, formData]);
-      console.log("Expense data submitted:", formData);
+      setExpenses([...expenses, res.data.expense]);
+      console.log("Expense data submitted:", res.data.expense);
       // Add logic to send form data to your backend or state management
       setFormData({ amount: "", description: "", category: "" });
     } else {
@@ -28,6 +28,19 @@ const ExpenseForm = () => {
     }
   };
 
+  const DeleteExpense = async (expense) => {
+    try {
+      const res = await axios.post(
+        "http://localhost:4000/delete-expense",
+        expense
+      );
+      if (res.status === 200) {
+        alert("Expense delete Success");
+      } else alert("Failed to delete expense");
+    } catch (error) {
+      alert(error);
+    }
+  };
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="flex justify-center items-start mb-8">
@@ -127,7 +140,10 @@ const ExpenseForm = () => {
                 <p>
                   <strong>Category:</strong> {expense.category}
                 </p>
-                <button className="bg-red-600 p-2 rounded-lg text-white ">
+                <button
+                  className="bg-red-600 p-2 rounded-lg text-white "
+                  onClick={() => DeleteExpense(expense)}
+                >
                   Delete
                 </button>
               </li>

@@ -90,3 +90,24 @@ exports.AddExpense = async (req, res) => {
     res.status(500).json({ message: "An error occured while adding the user" });
   }
 };
+
+exports.deleteExpense = async (req, res) => {
+  try {
+    const { id } = req.body;
+    if (!id) {
+      return res.status(400).json({ message: "Expense ID is Required" });
+    }
+    const expense = await Expenses.findByPk(id);
+    if (!expense) {
+      return res.status(400).json({ message: "Expense Not Found" });
+    }
+    await expense.destroy();
+
+    res.status(200).json({ message: "Expense Delete Successfully" });
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .json({ message: "An error occured while deleting the expenses" });
+  }
+};
