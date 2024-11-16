@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import axios from "axios";
+import Context from "../context/store";
 
 const ExpenseForm = () => {
   const [formData, setFormData] = useState({
@@ -8,6 +9,7 @@ const ExpenseForm = () => {
     category: "",
   });
   const [expenses, setExpenses] = useState([]);
+  const { token } = useContext(Context);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -16,7 +18,15 @@ const ExpenseForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await axios.post("http://localhost:4000/add-expense", formData);
+    const res = await axios.post(
+      "http://localhost:4000/add-expense",
+      formData,
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
+    );
     if (res.status === 200) {
       alert("Expense Added");
       setExpenses([...expenses, res.data.expense]);
