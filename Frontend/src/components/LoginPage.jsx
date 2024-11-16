@@ -26,6 +26,7 @@ const LoginPage = () => {
     if (res.status == 200) {
       login();
       alert(res.data.message);
+      localStorage.setItem("token", res.data.user.token);
       navigate("/expense");
     }
     console.log(res.data);
