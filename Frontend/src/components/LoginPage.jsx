@@ -23,13 +23,16 @@ const LoginPage = () => {
     const res = await axios.post("http://localhost:4000/login", {
       formData,
     });
-    if (res.status == 200) {
+    console.log(res);
+    if (res.status === 200) {
       login();
       alert(res.data.message);
       localStorage.setItem("token", res.data.user.token);
       navigate("/expense");
+    } else {
+      alert("res.data.message");
+      console.log(res.message);
     }
-    console.log(res.data);
     // Add logic to handle form submission
   };
 
