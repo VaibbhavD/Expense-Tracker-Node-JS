@@ -54,12 +54,14 @@ exports.Login = async (req, res) => {
   try {
     const { email, password } = req.body.formData;
     const user = await User.findOne({ where: { email } });
+    console.log(user);
 
     if (!user) {
       return res.status(404).json({ message: "User Not Found Please Sign Up" });
     }
 
     const PasswordIsMatch = await bcrypt.compare(password, user.password);
+    console.log(PasswordIsMatch);
 
     if (!PasswordIsMatch) {
       return res.status(401).json({
@@ -96,7 +98,7 @@ exports.AddExpense = async (req, res) => {
       amount,
       description,
       category,
-      user_id: req.user.id,
+      user_id: req.user.userId,
     });
     res.status(200).json({ message: "Expense Added Successfully", expense });
   } catch (error) {
