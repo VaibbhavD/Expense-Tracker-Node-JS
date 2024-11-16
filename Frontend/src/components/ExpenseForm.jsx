@@ -1,6 +1,7 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import Context from "../context/store";
+import { useNavigate } from "react-router";
 
 const ExpenseForm = () => {
   const [formData, setFormData] = useState({
@@ -8,13 +9,37 @@ const ExpenseForm = () => {
     description: "",
     category: "",
   });
-  const [expenses, setExpenses] = useState([]);
-  const { token } = useContext(Context);
+  const { token, expenses, settoken, setIsLoggedIn } = useContext(Context);
+  const [Expenses, setExpenses] = useState(expenses);
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
+
+  useEffect(() => {
+    const fetchExpenses = async () => {
+      try {
+        const res = await axios.post(
+          "http://localhost:4000/get-expenses",
+          {},
+          {
+            headers: {
+              Authorization: token, // Fixed typo in "Authorization"
+            },
+          }
+        );
+
+        setExpenses(res.data.expenses); // Assuming `expenses` is the array from `res.data`
+      } catch (error) {
+        console.error("Error fetching expenses:", error);
+      }
+    };
+
+    fetchExpenses();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -29,7 +54,7 @@ const ExpenseForm = () => {
     );
     if (res.status === 200) {
       alert("Expense Added");
-      setExpenses([...expenses, res.data.expense]);
+      setExpenses([...Expenses, res.data.expense]);
       console.log("Expense data submitted:", res.data.expense);
       // Add logic to send form data to your backend or state management
       setFormData({ amount: "", description: "", category: "" });
@@ -45,14 +70,36 @@ const ExpenseForm = () => {
         expense
       );
       if (res.status === 200) {
+        setExpenses((prev) => {
+          const exp = prev.filter((ex) => ex.id != expense.id);
+          return exp;
+        });
         alert("Expense delete Success");
       } else alert("Failed to delete expense");
     } catch (error) {
       alert(error);
     }
   };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    settoken(null);
+    setIsLoggedIn(false);
+    alert("Logged out successfully");
+    navigate("/login");
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 p-4">
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-3xl font-bold">Expense Tracker</h1>
+        <button
+          onClick={handleLogout}
+          className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
+        >
+          Logout
+        </button>
+      </div>
       <div className="flex justify-center items-start mb-8">
         <form
           onSubmit={handleSubmit}
@@ -134,9 +181,9 @@ const ExpenseForm = () => {
 
       <div className="max-w-xl mx-auto bg-white shadow-md rounded p-4">
         <h2 className="text-xl font-bold mb-4">Expense List</h2>
-        {expenses.length > 0 ? (
+        {Expenses.length > 0 ? (
           <ul>
-            {expenses.map((expense, index) => (
+            {Expenses.map((expense, index) => (
               <li
                 key={index}
                 className="border-b flex flex-col md:flex-row justify-center items-center gap-5 border-gray-300 py-2"
