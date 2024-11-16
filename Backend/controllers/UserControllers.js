@@ -1,5 +1,13 @@
 const { User, Expenses } = require("../models/db");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+
+const GetJwtToken = (user) => {
+  return jwt.sign(
+    { userId: user.id, name: user.name, email: user.email },
+    "kNImRb9lNAJ7YM4cpSYz-uei3G3PVwfQqd1nsX7kE3g"
+  );
+};
 
 exports.SignUp = async (req, res) => {
   try {
@@ -61,7 +69,12 @@ exports.Login = async (req, res) => {
 
     return res.status(200).json({
       message: "Login Successfull",
-      user: { id: user.id, name: user.name, email: user.email },
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        token: GetJwtToken(user),
+      },
     });
   } catch (error) {
     return res
@@ -83,6 +96,7 @@ exports.AddExpense = async (req, res) => {
       amount,
       description,
       category,
+      user_id: req.user.id,
     });
     res.status(200).json({ message: "Expense Added Successfully", expense });
   } catch (error) {
