@@ -10,6 +10,8 @@ const {
   deleteExpense,
 } = require("./controllers/UserControllers");
 
+const { UserAuthentication } = require("./middleware/UserAuthentication");
+
 const app = Express();
 
 // Use middlewares
@@ -23,7 +25,7 @@ app.get("/", (req, res) => {
 
 app.post("/signup", SignUp);
 app.post("/login", Login);
-app.post("/add-expense", AddExpense);
+app.post("/add-expense", UserAuthentication, AddExpense);
 app.post("/delete-expense", deleteExpense);
 
 // Sync the database and start the server
