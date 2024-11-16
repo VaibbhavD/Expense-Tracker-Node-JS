@@ -8,6 +8,7 @@ const {
   Login,
   AddExpense,
   deleteExpense,
+  GetExpenses,
 } = require("./controllers/UserControllers");
 
 const { UserAuthentication } = require("./middleware/UserAuthentication");
@@ -27,6 +28,7 @@ app.post("/signup", SignUp);
 app.post("/login", Login);
 app.post("/add-expense", UserAuthentication, AddExpense);
 app.post("/delete-expense", deleteExpense);
+app.post("/get-expenses", UserAuthentication, GetExpenses);
 
 // Sync the database and start the server
 sequelize
