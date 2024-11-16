@@ -7,12 +7,13 @@ import "./App.css";
 import Context from "./context/store";
 
 function App() {
-  const { isLoggedIn, setIsLoggedIn } = useContext(Context);
+  const { isLoggedIn, setIsLoggedIn, settoken } = useContext(Context);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
 
     if (token) {
+      settoken(token);
       setIsLoggedIn(true);
     }
   }, []);
