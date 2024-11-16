@@ -45,5 +45,16 @@ const Expenses = sequelize.define("expenses", {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  user_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: "users", // Name of the target table
+      key: "id", // Column name in the target table
+    },
+    onUpdate: "CASCADE",
+    onDelete: "CASCADE",
+  },
 });
+
 module.exports = { sequelize, User, Expenses };
