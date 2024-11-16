@@ -12,7 +12,6 @@ exports.UserAuthentication = async (req, res, next) => {
     );
     console.log(userObj);
     const user = await User.findByPk(userObj.userId);
-    console.log("User", user);
     if (!user) {
       res.status(400).json({ message: "user not found" });
     }

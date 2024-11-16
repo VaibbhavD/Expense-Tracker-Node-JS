@@ -4,6 +4,7 @@ import Context from "./store";
 const ContextProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [token, settoken] = useState();
+  const [expenses, setexpenses] = useState([]);
 
   const login = () => {
     setIsLoggedIn(true);
@@ -11,7 +12,15 @@ const ContextProvider = ({ children }) => {
 
   return (
     <Context.Provider
-      value={{ login, isLoggedIn, setIsLoggedIn, token, settoken }}
+      value={{
+        login,
+        isLoggedIn,
+        setIsLoggedIn,
+        token,
+        settoken,
+        expenses,
+        setexpenses,
+      }}
     >
       {children}
     </Context.Provider>
