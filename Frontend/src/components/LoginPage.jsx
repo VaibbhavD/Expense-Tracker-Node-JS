@@ -9,7 +9,7 @@ const LoginPage = () => {
     password: "",
   });
 
-  const { login } = useContext(Context);
+  const { login, settoken } = useContext(Context);
 
   const navigate = useNavigate();
 
@@ -28,6 +28,7 @@ const LoginPage = () => {
       login();
       alert(res.data.message);
       localStorage.setItem("token", res.data.user.token);
+      settoken(res.data.user.token);
       navigate("/expense");
     } else {
       alert("res.data.message");

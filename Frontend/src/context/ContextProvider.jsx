@@ -5,6 +5,7 @@ const ContextProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [token, settoken] = useState();
   const [expenses, setexpenses] = useState([]);
+  const [isPremium, SetisPremium] = useState(false);
 
   const login = () => {
     setIsLoggedIn(true);
@@ -20,6 +21,8 @@ const ContextProvider = ({ children }) => {
         settoken,
         expenses,
         setexpenses,
+        isPremium,
+        SetisPremium,
       }}
     >
       {children}

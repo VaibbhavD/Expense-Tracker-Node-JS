@@ -16,6 +16,7 @@ exports.UserAuthentication = async (req, res, next) => {
       res.status(400).json({ message: "user not found" });
     }
     req.user = userObj;
+    console.log(req.user);
     next();
   } catch (error) {
     console.log(error);

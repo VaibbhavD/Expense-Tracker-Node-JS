@@ -25,6 +25,9 @@ const User = sequelize.define("users", {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  isPremium: {
+    type: DataTypes.BOOLEAN,
+  },
 });
 
 const Expenses = sequelize.define("expenses", {
@@ -57,4 +60,26 @@ const Expenses = sequelize.define("expenses", {
   },
 });
 
-module.exports = { sequelize, User, Expenses };
+const Order = sequelize.define("order", {
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    allowNull: false,
+    primaryKey: true,
+  },
+  paymentid: {
+    type: DataTypes.STRING,
+    allowNull: true, // This can be null initially (before payment is completed)
+  },
+  orderid: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true,
+  },
+  status: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+});
+
+module.exports = { sequelize, User, Expenses, Order };

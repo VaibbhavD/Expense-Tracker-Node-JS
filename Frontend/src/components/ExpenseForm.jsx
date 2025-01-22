@@ -9,7 +9,15 @@ const ExpenseForm = () => {
     description: "",
     category: "",
   });
-  const { token, expenses, settoken, setIsLoggedIn } = useContext(Context);
+  const {
+    token,
+    expenses,
+    settoken,
+    setIsLoggedIn,
+    isLoggedIn,
+    isPremium,
+    SetisPremium,
+  } = useContext(Context);
   const [Expenses, setExpenses] = useState(expenses);
 
   const navigate = useNavigate();
@@ -37,9 +45,27 @@ const ExpenseForm = () => {
         console.error("Error fetching expenses:", error);
       }
     };
+    const GetPremiumState = async () => {
+      try {
+        const res = await axios.post(
+          "http://localhost:4000/Getpremium_state",
+          {},
+          {
+            headers: {
+              Authorization: token, // Fixed typo in "Authorization"
+            },
+          }
+        );
+
+        SetisPremium(res.data.isPremium); // Assuming `expenses` is the array from `res.data`
+      } catch (error) {
+        console.error("Error fetching expenses:", error);
+      }
+    };
 
     fetchExpenses();
-  }, []);
+    GetPremiumState();
+  }, [isLoggedIn]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -89,16 +115,73 @@ const ExpenseForm = () => {
     navigate("/login");
   };
 
+  const handleBuyPremium = async () => {
+    try {
+      const res = await axios.post(
+        "http://localhost:4000/buypremium",
+        {},
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
+
+      const options = {
+        key: res.data.key_id,
+        order_id: res.data.order.id, // Access the order ID correctly
+        handler: async function (response) {
+          try {
+            await axios.post(
+              "http://localhost:4000/buypremium/updatestatus",
+              {
+                order_id: options.order_id,
+                payment_id: response.razorpay_payment_id,
+              },
+              {
+                headers: {
+                  Authorization: token,
+                },
+              }
+            );
+            alert("Payment Done. Now You are a Premium User");
+            SetisPremium(true);
+          } catch (error) {
+            console.error("Error updating payment status:", error);
+            alert(
+              "Payment was successful, but there was an issue updating your status."
+            );
+          }
+        },
+      };
+
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
+    } catch (error) {
+      console.error("Error in handleBuyPremium:", error);
+      alert("Failed to initiate payment. Please try again later.");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-3xl font-bold">Expense Tracker</h1>
-        <button
-          onClick={handleLogout}
-          className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
-        >
-          Logout
-        </button>
+        <div className="flex gap-4">
+          <button
+            className="gradient-button text-xs py-2 sm:py-4 px-2 h-1/2 md:h-full md:text-base md:py-2 md:px-4 text-white font-semibold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
+            onClick={handleBuyPremium}
+            disabled={isPremium}
+          >
+            {!isPremium ? "Buy Premium" : "Elite Member"}
+          </button>
+          <button
+            onClick={handleLogout}
+            className="bg-red-500 hover:bg-red-600 text-white font-bold text-xs py-4 px-2 h-1/2 md:h-full md:text-base md:py-2 md:px-4  rounded"
+          >
+            Logout
+          </button>
+        </div>
       </div>
       <div className="flex justify-center items-start mb-8">
         <form
