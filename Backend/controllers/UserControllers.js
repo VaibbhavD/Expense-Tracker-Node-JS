@@ -130,16 +130,41 @@ exports.deleteExpense = async (req, res) => {
 
 exports.GetExpenses = async (req, res) => {
   try {
-    const { userId } = req.user; // Corrected de-structuring
-    // console.log("User_id", userId);
-    const expenses = await Expenses.findAll({ where: { user_id: userId } });
+    const { userId } = req.user; // Extract user ID from the request
 
-    if (!expenses || expenses.length === 0) {
-      return res.status(404).json({ message: "Expenses not found" });
+    // Fetch user-specific expenses
+    const userExpenses = await Expenses.findAll({
+      where: { user_id: userId },
+      include: [
+        {
+          model: User,
+          attributes: ["id", "name", "email"], // Fetch user-specific fields
+        },
+      ],
+    });
+
+    // Fetch all expenses and include associated user info
+    const allExpenses = await Expenses.findAll({
+      include: [
+        {
+          model: User,
+          attributes: ["id", "name", "email"], // Fetch user fields
+        },
+      ],
+    });
+
+    // Check if the user has no expenses
+    if (!userExpenses || userExpenses.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No expenses found for this user" });
     }
-    res
-      .status(200)
-      .json({ message: "Expenses retrieved successfully", expenses });
+
+    res.status(200).json({
+      message: "Expenses retrieved successfully",
+      Expenses: userExpenses,
+      allExpenses,
+    });
   } catch (error) {
     console.error("Error fetching expenses:", error);
     res

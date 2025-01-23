@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import Context from "../context/store";
 import { useNavigate } from "react-router";
+import LeaderBoard from "./LeaderBoard";
 
 const ExpenseForm = () => {
   const [formData, setFormData] = useState({
@@ -19,8 +20,13 @@ const ExpenseForm = () => {
     SetisPremium,
   } = useContext(Context);
   const [Expenses, setExpenses] = useState(expenses);
+  const [Leardboard, SetLeardboard] = useState(false);
 
   const navigate = useNavigate();
+
+  const ShowLeaderBoard = () => {
+    SetLeardboard((prev) => !prev);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -40,7 +46,7 @@ const ExpenseForm = () => {
           }
         );
 
-        setExpenses(res.data.expenses); // Assuming `expenses` is the array from `res.data`
+        setExpenses(res.data.Expenses); // Assuming `expenses` is the array from `res.data`
       } catch (error) {
         console.error("Error fetching expenses:", error);
       }
@@ -164,12 +170,13 @@ const ExpenseForm = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-3xl font-bold">Expense Tracker</h1>
+    <div className="min-h-screen bg-gray-100 ">
+      {/* Header */}
+      <div className="flex justify-between items-center bg-gray-200 mb-4 p-4">
+        <h1 className="md:text-3xl text-md font-bold">Expense Tracker</h1>
         <div className="flex gap-4">
           <button
-            className="gradient-button text-xs py-2 sm:py-4 px-2 h-1/2 md:h-full md:text-base md:py-2 md:px-4 text-white font-semibold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
+            className="gradient-button text-xs py-4 sm:py-4 px-2 h-1/2 md:h-full md:text-base md:py-2 md:px-4 text-white font-semibold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
             onClick={handleBuyPremium}
             disabled={isPremium}
           >
@@ -183,116 +190,132 @@ const ExpenseForm = () => {
           </button>
         </div>
       </div>
-      <div className="flex justify-center items-start mb-8">
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white shadow-md rounded md:px-14 px-6 pt-6 pb-10 w-full max-w-xl"
-        >
-          <h2 className="text-2xl font-bold mb-4 text-center">Add Expense</h2>
-
-          <div className="mb-4">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="amount"
-            >
-              Amount
-            </label>
-            <input
-              type="number"
-              id="amount"
-              name="amount"
-              value={formData.amount}
-              onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              placeholder="Enter amount"
-              required
-            />
-          </div>
-
-          <div className="mb-4">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="description"
-            >
-              Description
-            </label>
-            <input
-              type="text"
-              id="description"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              placeholder="Enter description"
-              required
-            />
-          </div>
-
-          <div className="mb-8">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="category"
-            >
-              Category
-            </label>
-            <select
-              id="category"
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              required
-            >
-              <option value="">Select category</option>
-              <option value="Food">Food</option>
-              <option value="Transport">Transport</option>
-              <option value="Shopping">Shopping</option>
-              <option value="Bills">Bills</option>
-              <option value="Entertainment">Entertainment</option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
-
-          <button
-            type="submit"
-            className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-          >
-            Add Expense
-          </button>
-        </form>
-      </div>
-
-      <div className="max-w-xl mx-auto bg-white shadow-md rounded p-4">
-        <h2 className="text-xl font-bold mb-4">Expense List</h2>
-        {Expenses.length > 0 ? (
-          <ul>
-            {Expenses.map((expense, index) => (
-              <li
-                key={index}
-                className="border-b flex flex-col md:flex-row justify-center items-center gap-5 border-gray-300 py-2"
+      {/* Form */}
+      {!Leardboard && (
+        <>
+          <div className="flex flex-col justify-center items-start mb-8 px-4">
+            <div className="w-full flex justify-end">
+              <button
+                onClick={ShowLeaderBoard}
+                className="gradient-button2 text-xs py-4 sm:py-4 px-2 h-1/2 md:h-full md:text-base md:py-2 md:px-4 text-white font-semibold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
               >
-                <p>
-                  <strong>Amount:</strong> ${expense.amount}
-                </p>
-                <p>
-                  <strong>Description:</strong> {expense.description}
-                </p>
-                <p>
-                  <strong>Category:</strong> {expense.category}
-                </p>
-                <button
-                  className="bg-red-600 p-2 rounded-lg text-white "
-                  onClick={() => DeleteExpense(expense)}
+                Leaderboard
+              </button>
+            </div>
+            <form
+              onSubmit={handleSubmit}
+              className="bg-white shadow-md mx-auto rounded md:px-14 px-6 pt-6 pb-10 w-full max-w-xl"
+            >
+              <h2 className="text-2xl font-bold mb-4 text-center">
+                Add Expense
+              </h2>
+
+              <div className="mb-4">
+                <label
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                  htmlFor="amount"
                 >
-                  Delete
-                </button>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-gray-500">No expenses added yet.</p>
-        )}
-      </div>
+                  Amount
+                </label>
+                <input
+                  type="number"
+                  id="amount"
+                  name="amount"
+                  value={formData.amount}
+                  onChange={handleChange}
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  placeholder="Enter amount"
+                  required
+                />
+              </div>
+
+              <div className="mb-4">
+                <label
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                  htmlFor="description"
+                >
+                  Description
+                </label>
+                <input
+                  type="text"
+                  id="description"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  placeholder="Enter description"
+                  required
+                />
+              </div>
+
+              <div className="mb-8">
+                <label
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                  htmlFor="category"
+                >
+                  Category
+                </label>
+                <select
+                  id="category"
+                  name="category"
+                  value={formData.category}
+                  onChange={handleChange}
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  required
+                >
+                  <option value="">Select category</option>
+                  <option value="Food">Food</option>
+                  <option value="Transport">Transport</option>
+                  <option value="Shopping">Shopping</option>
+                  <option value="Bills">Bills</option>
+                  <option value="Entertainment">Entertainment</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              >
+                Add Expense
+              </button>
+            </form>
+          </div>
+          {/* expenses */}
+          <div className="max-w-xl mx-auto bg-white shadow-md rounded p-4">
+            <h2 className="text-xl font-bold mb-4">Expense List</h2>
+            {Expenses.length > 0 ? (
+              <ul>
+                {Expenses.map((expense, index) => (
+                  <li
+                    key={index}
+                    className="border-b flex flex-col md:flex-row justify-center items-center gap-5 border-gray-300 py-2"
+                  >
+                    <p>
+                      <strong>Amount:</strong> ${expense.amount}
+                    </p>
+                    <p>
+                      <strong>Description:</strong> {expense.description}
+                    </p>
+                    <p>
+                      <strong>Category:</strong> {expense.category}
+                    </p>
+                    <button
+                      className="bg-red-600 p-2 rounded-lg text-white "
+                      onClick={() => DeleteExpense(expense)}
+                    >
+                      Delete
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-gray-500">No expenses added yet.</p>
+            )}
+          </div>
+        </>
+      )}
+      {Leardboard && <LeaderBoard ShowLeaderBoard={ShowLeaderBoard} />}
     </div>
   );
 };

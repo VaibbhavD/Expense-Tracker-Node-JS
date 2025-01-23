@@ -82,4 +82,7 @@ const Order = sequelize.define("order", {
   },
 });
 
+User.hasMany(Expenses, { foreignKey: "user_id", onDelete: "CASCADE" });
+Expenses.belongsTo(User, { foreignKey: "user_id" });
+
 module.exports = { sequelize, User, Expenses, Order };
