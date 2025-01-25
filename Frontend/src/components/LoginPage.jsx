@@ -31,8 +31,8 @@ const LoginPage = () => {
       settoken(res.data.user.token);
       navigate("/expense");
     } else {
-      alert("res.data.message");
-      console.log(res.message);
+      alert(res.data.message);
+      console.log(res.response.data);
     }
     // Add logic to handle form submission
   };

@@ -12,6 +12,7 @@ const {
   BuyPremium,
   UpdatePremium,
   GetUserPremiumStatus,
+  GetallUsers,
 } = require("./controllers/UserControllers");
 
 const { UserAuthentication } = require("./middleware/UserAuthentication");
@@ -33,6 +34,7 @@ app.post("/add-expense", UserAuthentication, AddExpense);
 app.post("/delete-expense", deleteExpense);
 app.post("/get-expenses", UserAuthentication, GetExpenses);
 app.post("/buypremium", UserAuthentication, BuyPremium);
+app.post("/getallusers", UserAuthentication, GetallUsers);
 app.post("/buypremium/updatestatus", UserAuthentication, UpdatePremium);
 app.post("/Getpremium_state", UserAuthentication, GetUserPremiumStatus);
 // Sync the database and start the server

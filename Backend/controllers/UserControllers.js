@@ -57,7 +57,7 @@ exports.Login = async (req, res) => {
     const user = await User.findOne({ where: { email } });
 
     if (!user) {
-      return res.status(404).json({ message: "User Not Found Please Sign Up" });
+      return res.status(202).json({ message: "User Not Found Please Sign Up" });
     }
 
     const PasswordIsMatch = await bcrypt.compare(password, user.password);
@@ -88,22 +88,48 @@ exports.Login = async (req, res) => {
 exports.AddExpense = async (req, res) => {
   try {
     console.log(req.body);
+
     const { amount, description, category } = req.body;
 
+    // Validate request data
     if (!amount || !description || !category) {
-      res.status(401).json({ message: "Please Enter Valid Information" });
+      return res.status(400).json({ message: "Please enter valid information" });
     }
 
+    const parsedAmount = parseFloat(amount); // Ensure amount is a number
+    if (isNaN(parsedAmount) || parsedAmount <= 0) {
+      return res.status(400).json({ message: "Amount must be a positive number" });
+    }
+
+    // Create a new expense
     const expense = await Expenses.create({
-      amount,
+      amount: parsedAmount,
       description,
       category,
       user_id: req.user.userId,
     });
-    res.status(200).json({ message: "Expense Added Successfully", expense });
+
+    // Update user's total expense
+    const user = await User.findByPk(req.user.userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Handle cases where totalexpense might be null or undefined
+    user.totalexpense = (user.totalexpense || 0) + parsedAmount;
+    console.log(user.totalexpense);
+    await user.save();
+
+    // Respond with success
+    res.status(200).json({
+      message: "Expense added successfully",
+      expense,
+    });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: "An error occured while adding the user" });
+    console.error("Error adding expense:", error);
+    res.status(500).json({
+      message: "An error occurred while adding the expense",
+    });
   }
 };
 
@@ -286,6 +312,20 @@ exports.GetUserPremiumStatus = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in GetUserPremiumStatus:", error);
+    return res.status(500).json({ message: "Something went wrong", error });
+  }
+};
+
+exports.GetallUsers = async (req, res) => {
+  try {
+    const users = await User.findAll();
+    if (!users) {
+      return res.status(404).json({ message: "No users found" });
+    }
+
+    return res.status(200).json({ users });
+  } catch (error) {
+    console.error("Error in GetallUsers:", error);
     return res.status(500).json({ message: "Something went wrong", error });
   }
 };

@@ -11,7 +11,7 @@ export default function LeaderBoard({ ShowLeaderBoard }) {
     const fetchExpenses = async () => {
       try {
         const res = await axios.post(
-          "http://localhost:4000/get-expenses",
+          "http://localhost:4000/getallusers",
           {},
           {
             headers: {
@@ -19,32 +19,19 @@ export default function LeaderBoard({ ShowLeaderBoard }) {
             },
           }
         );
-
-        const allExpenses = res.data.allExpenses; // Assuming `allExpenses` is returned
-        const userTotals = {};
-
-        // Calculate total expenses for each user
-        allExpenses.forEach((expense) => {
-          const { user_id, user, amount } = expense;
-          if (!userTotals[user_id]) {
-            userTotals[user_id] = {
-              name: user.name,
-              userId: user_id,
-              totalAmount: 0,
-            };
-          }
-          userTotals[user_id].totalAmount += amount;
+        const users = res.data.users; // Assuming the backend returns an array of users with totalexpense
+        if (!users || users.length === 0) {
+          console.warn("No users data received.");
+          return;
+        }
+  
+        // Sort the users by name first and then by totalexpense in descending order
+        const sortedUsers = [...users].sort((a, b) => {
+          if (a.name !== b.name) return a.name.localeCompare(b.name); // Sort by name alphabetically
+          return b.totalexpense - a.totalexpense; // Then by totalexpense in descending order
         });
-
-        // Convert the object to an array and sort it
-        const sortedExpenses = Object.values(userTotals).sort((a, b) => {
-          if (a.name !== b.name) return a.name.localeCompare(b.name); // Sort by name
-          if (a.userId !== b.userId) return a.userId - b.userId; // Then by userId
-          return b.totalAmount - a.totalAmount; // Finally by total amount
-        });
-
-        setSortedUsers(sortedExpenses); // Store sorted data in state
-        setExpenses(res.data.expenses); // Set individual expenses for the logged-in user
+  
+        setSortedUsers(sortedUsers); // Store sorted data in state
       } catch (error) {
         console.error("Error fetching expenses:", error);
       }
@@ -76,7 +63,7 @@ export default function LeaderBoard({ ShowLeaderBoard }) {
                 </p>
                 <p>
                   <strong>Total Expenses:</strong> $
-                  {user.totalAmount.toFixed(2)}
+                  {user.totalexpense}
                 </p>
               </li>
             ))}

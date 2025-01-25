@@ -28,6 +28,10 @@ const User = sequelize.define("users", {
   isPremium: {
     type: DataTypes.BOOLEAN,
   },
+  totalexpense: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  }
 });
 
 const Expenses = sequelize.define("expenses", {
