@@ -2,6 +2,9 @@ const { User, Expenses, Order } = require("../models/db");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Razorpay = require("razorpay");
+const SibApiV3Sdk = require('sib-api-v3-sdk');
+require('dotenv').config();
+
 
 const GetJwtToken = (user) => {
   return jwt.sign(
@@ -220,8 +223,8 @@ exports.GetExpenses = async (req, res) => {
 exports.BuyPremium = async (req, res) => {
   try {
     const rzp = new Razorpay({
-      key_id: "rzp_test_4w92rPTdK5vaWB",
-      key_secret: "FGenJCuLlXZKym039212cFIp",
+      key_id:  process.env.RAZORPAY_KEY_ID,
+      key_secret:  process.env.RAZORPAY_SECRET_KEY,
     });
 
     const amount = 2500;
@@ -345,5 +348,49 @@ exports.GetallUsers = async (req, res) => {
   } catch (error) {
     console.error("Error in GetallUsers:", error);
     return res.status(500).json({ message: "Something went wrong", error });
+  }
+};
+
+exports.forgetPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // Validate the email
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required' });
+    }
+
+    // Find the user by email
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Set up the Brevo API client
+    const defaultClient = SibApiV3Sdk.ApiClient.instance;
+    const apiKey = defaultClient.authentications['api-key'];
+    apiKey.apiKey = "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"; // Add this key in your .env file
+
+    // Create the email details
+    const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+    const sendSmtpEmail = {
+      to: [{ email }],
+      sender: { name: 'Expense Tracker', email: 'vaibhavdhamanage12@gmail.com' },
+      subject: 'Reset Your Password',
+      htmlContent: `
+        <p>Hello,</p>
+        <p>You requested to reset your password. Please click the link below to reset your password:</p>
+        <a href="http://localhost:5173/resetpassword">Reset Password</a>
+        <p>If you did not request this, please ignore this email.</p>
+      `,
+    };
+
+    // Send the email
+    await apiInstance.sendTransacEmail(sendSmtpEmail);
+
+    res.status(200).json({ message: 'Password reset email sent successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'An error occurred while processing the request' });
   }
 };

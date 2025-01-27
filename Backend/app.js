@@ -13,6 +13,7 @@ const {
   UpdatePremium,
   GetUserPremiumStatus,
   GetallUsers,
+  forgetPassword
 } = require("./controllers/UserControllers");
 
 const { UserAuthentication } = require("./middleware/UserAuthentication");
@@ -30,6 +31,7 @@ app.get("/", (req, res) => {
 
 app.post("/signup", SignUp);
 app.post("/login", Login);
+app.post("/forgotpassword", forgetPassword);
 app.post("/add-expense", UserAuthentication, AddExpense);
 app.post("/delete-expense",UserAuthentication, deleteExpense);
 app.post("/get-expenses", UserAuthentication, GetExpenses);
