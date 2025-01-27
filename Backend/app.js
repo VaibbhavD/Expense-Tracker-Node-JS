@@ -31,7 +31,7 @@ app.get("/", (req, res) => {
 app.post("/signup", SignUp);
 app.post("/login", Login);
 app.post("/add-expense", UserAuthentication, AddExpense);
-app.post("/delete-expense", deleteExpense);
+app.post("/delete-expense",UserAuthentication, deleteExpense);
 app.post("/get-expenses", UserAuthentication, GetExpenses);
 app.post("/buypremium", UserAuthentication, BuyPremium);
 app.post("/getallusers", UserAuthentication, GetallUsers);

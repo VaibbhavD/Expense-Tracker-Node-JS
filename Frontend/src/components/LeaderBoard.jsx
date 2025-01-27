@@ -27,7 +27,6 @@ export default function LeaderBoard({ ShowLeaderBoard }) {
   
         // Sort the users by name first and then by totalexpense in descending order
         const sortedUsers = [...users].sort((a, b) => {
-          if (a.name !== b.name) return a.name.localeCompare(b.name); // Sort by name alphabetically
           return b.totalexpense - a.totalexpense; // Then by totalexpense in descending order
         });
   

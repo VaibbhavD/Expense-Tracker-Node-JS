@@ -87,18 +87,20 @@ exports.Login = async (req, res) => {
 
 exports.AddExpense = async (req, res) => {
   try {
-    console.log(req.body);
-
     const { amount, description, category } = req.body;
 
     // Validate request data
     if (!amount || !description || !category) {
-      return res.status(400).json({ message: "Please enter valid information" });
+      return res
+        .status(400)
+        .json({ message: "Please enter valid information" });
     }
 
     const parsedAmount = parseFloat(amount); // Ensure amount is a number
     if (isNaN(parsedAmount) || parsedAmount <= 0) {
-      return res.status(400).json({ message: "Amount must be a positive number" });
+      return res
+        .status(400)
+        .json({ message: "Amount must be a positive number" });
     }
 
     // Create a new expense
@@ -134,23 +136,39 @@ exports.AddExpense = async (req, res) => {
 };
 
 exports.deleteExpense = async (req, res) => {
+  console.log(req.user);
+  // console.log(req.)
   try {
-    const { id } = req.body;
+    const { id, user_id } = req.body;
+
+    // Validate request data
     if (!id) {
-      return res.status(400).json({ message: "Expense ID is Required" });
+      return res.status(400).json({ message: "Expense ID is required" });
     }
+
+    // Find the expense
     const expense = await Expenses.findByPk(id);
     if (!expense) {
-      return res.status(400).json({ message: "Expense Not Found" });
+      return res.status(404).json({ message: "Expense not found" });
     }
-    await expense.destroy();
+    await expense.destroy(); 
 
-    res.status(200).json({ message: "Expense Delete Successfully" });
+    // Find the user
+    const user = await User.findByPk(user_id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    user.totalexpense = user.totalexpense - expense.amount;
+    console.log(user.totalexpense);
+    await user.save();
+
+    res.status(200).json({ message: "Expense deleted successfully" });
   } catch (error) {
-    console.log(error);
+    await transaction.rollback(); // Rollback transaction on error
+    console.error(error);
     res
       .status(500)
-      .json({ message: "An error occured while deleting the expenses" });
+      .json({ message: "An error occurred while deleting the expense" });
   }
 };
 

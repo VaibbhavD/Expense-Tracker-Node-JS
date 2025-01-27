@@ -96,10 +96,16 @@ const ExpenseForm = () => {
   };
 
   const DeleteExpense = async (expense) => {
+    console.log(expense);
     try {
       const res = await axios.post(
         "http://localhost:4000/delete-expense",
-        expense
+        expense,
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
       );
       if (res.status === 200) {
         setExpenses((prev) => {
@@ -194,14 +200,16 @@ const ExpenseForm = () => {
       {!Leardboard && (
         <>
           <div className="flex flex-col justify-center items-start mb-8 px-4">
-          {isPremium &&<div className="w-full flex justify-end">
-            <button
-              onClick={ShowLeaderBoard}
-              className="gradient-button2 text-xs py-4 sm:py-4 px-2 h-1/2 md:h-full md:text-base md:py-2 md:px-4 text-white font-semibold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
-            >
-              Leaderboard
-            </button>
-          </div>}
+            {isPremium && (
+              <div className="w-full flex justify-end">
+                <button
+                  onClick={ShowLeaderBoard}
+                  className="gradient-button2 text-xs py-4 sm:py-4 px-2 h-1/2 md:h-full md:text-base md:py-2 md:px-4 text-white font-semibold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
+                >
+                  Leaderboard
+                </button>
+              </div>
+            )}
             <form
               onSubmit={handleSubmit}
               className="bg-white shadow-md mx-auto rounded md:px-14 px-6 pt-6 pb-10 w-full max-w-xl"
