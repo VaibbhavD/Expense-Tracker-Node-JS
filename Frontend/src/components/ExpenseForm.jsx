@@ -21,6 +21,7 @@ const ExpenseForm = () => {
   } = useContext(Context);
   const [Expenses, setExpenses] = useState(expenses);
   const [Leardboard, SetLeardboard] = useState(false);
+  const [showform, setshowform] = useState(false);
 
   const navigate = useNavigate();
 
@@ -179,10 +180,10 @@ const ExpenseForm = () => {
     <div className="min-h-screen bg-gray-100 ">
       {/* Header */}
       <div className="flex justify-between items-center bg-gray-200 mb-4 p-4">
-        <h1 className="md:text-3xl text-md font-bold">Expense Tracker</h1>
+        <h1 className="md:text-3xl text-lg font-bold">Expense Tracker</h1>
         <div className="flex gap-4">
           <button
-            className="gradient-button text-xs py-4 sm:py-4 px-2 h-1/2 md:h-full md:text-base md:py-2 md:px-4 text-white font-semibold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
+            className="gradient-button text-xs py-3 sm:py-4 px-2 h-1/2 md:h-full md:text-base md:py-2 md:px-4 text-white font-semibold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
             onClick={handleBuyPremium}
             disabled={isPremium}
           >
@@ -190,7 +191,7 @@ const ExpenseForm = () => {
           </button>
           <button
             onClick={handleLogout}
-            className="bg-red-500 hover:bg-red-600 text-white font-bold text-xs py-4 px-2 h-1/2 md:h-full md:text-base md:py-2 md:px-4  rounded"
+            className="bg-red-500 hover:bg-red-600 text-white font-bold text-xs py-3 px-2 h-1/2 md:h-full md:text-base md:py-2 md:px-4  rounded"
           >
             Logout
           </button>
@@ -200,20 +201,32 @@ const ExpenseForm = () => {
       {!Leardboard && (
         <>
           <div className="flex flex-col justify-center items-start mb-8 px-4">
-            {isPremium && (
-              <div className="w-full flex justify-end">
+            <div className="flex justify-end text-center w-full gap-2">
+              {" "}
+              <div className="h-fit flex justify-end">
                 <button
-                  onClick={ShowLeaderBoard}
-                  className="gradient-button2 text-xs py-4 sm:py-4 px-2 h-1/2 md:h-full md:text-base md:py-2 md:px-4 text-white font-semibold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
+                  onClick={() => setshowform(true)}
+                  className="bg-green-500 text-xs py-3 sm:py-4 px-2 h-1/2 md:h-full md:text-base md:py-2 md:px-4 text-white font-semibold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
                 >
-                  Leaderboard
+                  Add Expense
                 </button>
               </div>
-            )}
-            <form
+              {isPremium && (
+                <div className="h-fit flex justify-end">
+                  <button
+                    onClick={ShowLeaderBoard}
+                    className="gradient-button2 text-xs py-3 sm:py-4 px-2 h-1/2 md:h-full md:text-base md:py-2 md:px-4 text-white font-semibold rounded-lg shadow-lg transform transition-transform duration-300 hover:scale-105"
+                  >
+                    Leaderboard
+                  </button>
+                </div>
+              )}
+            </div>
+           {showform && <form
               onSubmit={handleSubmit}
               className="bg-white shadow-md mx-auto rounded md:px-14 px-6 pt-6 pb-10 w-full max-w-xl"
             >
+              <div className="w-full flex justify-end cursor-pointer font-bold text-gray-500" onClick={()=>setshowform(false)}>X</div>
               <h2 className="text-2xl font-bold mb-4 text-center">
                 Add Expense
               </h2>
@@ -287,17 +300,17 @@ const ExpenseForm = () => {
               >
                 Add Expense
               </button>
-            </form>
+            </form>}
           </div>
           {/* expenses */}
-          <div className="max-w-xl mx-auto bg-white shadow-md rounded p-4">
+          <div className="max-w-7xl mx-auto bg-white shadow-md rounded p-4">
             <h2 className="text-xl font-bold mb-4">Expense List</h2>
             {Expenses.length > 0 ? (
               <ul>
                 {Expenses.map((expense, index) => (
                   <li
                     key={index}
-                    className="border-b flex flex-col md:flex-row justify-center items-center gap-5 border-gray-300 py-2"
+                    className="border-b flex flex-col md:flex-row justify-between items-center mx-4 border-gray-300 py-2"
                   >
                     <p>
                       <strong>Amount:</strong> ${expense.amount}
