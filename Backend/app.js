@@ -13,7 +13,9 @@ const {
   UpdatePremium,
   GetUserPremiumStatus,
   GetallUsers,
-  forgetPassword
+  forgetPassword,
+  ResetPassVerifyLink,
+  Resetpassword
 } = require("./controllers/UserControllers");
 
 const { UserAuthentication } = require("./middleware/UserAuthentication");
@@ -39,6 +41,9 @@ app.post("/buypremium", UserAuthentication, BuyPremium);
 app.post("/getallusers", UserAuthentication, GetallUsers);
 app.post("/buypremium/updatestatus", UserAuthentication, UpdatePremium);
 app.post("/Getpremium_state", UserAuthentication, GetUserPremiumStatus);
+app.get("/resetpassword/verify/:id", ResetPassVerifyLink);
+app.post("/password/resetpassword", Resetpassword);
+
 // Sync the database and start the server
 sequelize
   .sync()

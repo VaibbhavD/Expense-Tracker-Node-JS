@@ -21,22 +21,29 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await axios.post("http://localhost:4000/login", {
-      formData,
-    });
-    console.log(res);
-    if (res.status === 200) {
-      login();
-      alert(res.data.message);
-      localStorage.setItem("token", res.data.user.token);
-      settoken(res.data.user.token);
-      navigate("/expense");
-    } else {
-      alert(res.data.message);
-      console.log(res.response.data);
+  
+    try {
+      const res = await axios.post("http://localhost:4000/login", { formData });
+  
+      if (res.status === 200) {
+        login();
+        alert(res.data.message);
+        localStorage.setItem("token", res.data.user.token);
+        settoken(res.data.user.token);
+        navigate("/expense");
+      }
+    } catch (error) {
+      // Handle incorrect password or user not found
+      if (error.response) {
+        alert(error.response.data.message);
+        console.error("Login Error:", error.response.data.message);
+      } else {
+        alert("An unexpected error occurred. Please try again.");
+        console.error("Unexpected Error:", error);
+      }
     }
-    // Add logic to handle form submission
   };
+  
 
   const ShowResetPassword = (e) => {
     setResetPassword((prev) => !prev);

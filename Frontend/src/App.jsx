@@ -5,6 +5,7 @@ import LoginPage from "./components/LoginPage";
 import ExpenseForm from "./components/ExpenseForm";
 import "./App.css";
 import Context from "./context/store";
+import ResetPassword from "./components/ResetPassword";
 
 function App() {
   const { isLoggedIn, setIsLoggedIn, settoken } = useContext(Context);
@@ -26,6 +27,7 @@ function App() {
         {isLoggedIn && <Route path="/expense" element={<ExpenseForm />} />}
         {isLoggedIn && <Route path="*" element={<ExpenseForm />} />}
         {!isLoggedIn && <Route path="/*" element={<LoginPage />} />}
+        <Route path="/password/resetpassword/:id" element={<ResetPassword />} />
       </Routes>
     </BrowserRouter>
   );

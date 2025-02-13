@@ -1,10 +1,10 @@
-const { User, Expenses, Order } = require("../models/db");
+const { User, Expenses, Order, ForgotPasswordRequest } = require("../models/db");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Razorpay = require("razorpay");
-const SibApiV3Sdk = require('sib-api-v3-sdk');
-require('dotenv').config();
-
+const SibApiV3Sdk = require("sib-api-v3-sdk");
+const { v4: uuidv4 } = require("uuid");
+require("dotenv").config();
 
 const GetJwtToken = (user) => {
   return jwt.sign(
@@ -154,7 +154,7 @@ exports.deleteExpense = async (req, res) => {
     if (!expense) {
       return res.status(404).json({ message: "Expense not found" });
     }
-    await expense.destroy(); 
+    await expense.destroy();
 
     // Find the user
     const user = await User.findByPk(user_id);
@@ -223,8 +223,8 @@ exports.GetExpenses = async (req, res) => {
 exports.BuyPremium = async (req, res) => {
   try {
     const rzp = new Razorpay({
-      key_id:  process.env.RAZORPAY_KEY_ID,
-      key_secret:  process.env.RAZORPAY_SECRET_KEY,
+      key_id: process.env.RAZORPAY_KEY_ID,
+      key_secret: process.env.RAZORPAY_SECRET_KEY,
     });
 
     const amount = 2500;
@@ -357,30 +357,39 @@ exports.forgetPassword = async (req, res) => {
 
     // Validate the email
     if (!email) {
-      return res.status(400).json({ message: 'Email is required' });
+      return res.status(400).json({ message: "Email is required" });
     }
 
     // Find the user by email
     const user = await User.findOne({ where: { email } });
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
     }
+
+    const resetToken = uuidv4();
+    await ForgotPasswordRequest.create({ id: resetToken, userId: user.id });
+
+    const resetUrl = `http://localhost:5173/password/resetpassword/${resetToken}`;
 
     // Set up the Brevo API client
     const defaultClient = SibApiV3Sdk.ApiClient.instance;
-    const apiKey = defaultClient.authentications['api-key'];
-    apiKey.apiKey = "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"; // Add this key in your .env file
+    const apiKey = defaultClient.authentications["api-key"];
+    apiKey.apiKey =
+      "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"; // Add this key in your .env file
 
     // Create the email details
     const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
     const sendSmtpEmail = {
       to: [{ email }],
-      sender: { name: 'Expense Tracker', email: 'vaibhavdhamanage12@gmail.com' },
-      subject: 'Reset Your Password',
+      sender: {
+        name: "Expense Tracker",
+        email: "vaibhavdhamanage12@gmail.com",
+      },
+      subject: "Reset Your Password",
       htmlContent: `
         <p>Hello,</p>
         <p>You requested to reset your password. Please click the link below to reset your password:</p>
-        <a href="http://localhost:5173/resetpassword">Reset Password</a>
+        <a href=${resetUrl}>Reset Password</a>
         <p>If you did not request this, please ignore this email.</p>
       `,
     };
@@ -388,9 +397,58 @@ exports.forgetPassword = async (req, res) => {
     // Send the email
     await apiInstance.sendTransacEmail(sendSmtpEmail);
 
-    res.status(200).json({ message: 'Password reset email sent successfully' });
+    res.status(200).json({ message: "Password reset email sent successfully" });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'An error occurred while processing the request' });
+    res
+      .status(500)
+      .json({ message: "An error occurred while processing the request" });
   }
 };
+
+exports.ResetPassVerifyLink = async (req, res) => {
+  try {
+    const{id} = req.params;
+    const request = await ForgotPasswordRequest.findByPk(id);
+    if (!request) {
+      return res.status(404).json({ message: "Invalid link" });
+    }
+    if(!request.isActive)
+    {
+      return res.status(400).json({ message: "Link is expired"})
+    }
+    
+    return res.status(200).json({ message: "Link is valid" });
+        
+    
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "An error occurred while processing the request" });
+  }
+
+}
+
+exports.Resetpassword=async(req,res)=>{
+  try {
+    const{id,newPassword} = req.body;
+    const userReq=await ForgotPasswordRequest.findByPk(id);
+    const user=await User.findByPk(userReq.userId);
+    const salt = await bcrypt.genSalt(10);
+    const hashPassword = await bcrypt.hash(newPassword, salt);
+    user.password=hashPassword;
+    userReq.isActive=false;
+    await userReq.save();
+    await user.save();
+    // await user_id.destroy();
+    return res.status(200).json({message:"Password Updated Successfully"});
+    
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "An error occurred while processing the request" });
+    
+  }
+}
