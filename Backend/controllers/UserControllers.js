@@ -374,7 +374,7 @@ exports.forgetPassword = async (req, res) => {
     // Set up the Brevo API client
     const defaultClient = SibApiV3Sdk.ApiClient.instance;
     const apiKey = defaultClient.authentications["api-key"];
-    apiKey.apiKey =process.env.API_KEY ; // Add this key in your .env file
+    apiKey.apiKey =process.env.SENDINBLUE_API_KEY ; // Add this key in your .env file
 
     // Create the email details
     const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
