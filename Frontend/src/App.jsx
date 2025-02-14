@@ -11,7 +11,7 @@ import Dashboard from "./components/Dashboard";
 import LeaderBoard from "./components/LeaderBoard";
 
 function App() {
-  const { isLoggedIn, setIsLoggedIn, settoken } = useContext(Context);
+  const { isLoggedIn, setIsLoggedIn, settoken,isPremium } = useContext(Context);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -24,12 +24,12 @@ function App() {
 
   return (
     <BrowserRouter>
-    <Header/>
+         {isLoggedIn && <Header />}
       <Routes>
         {!isLoggedIn && <Route path="/signup" element={<SignUp />} />}
         {!isLoggedIn && <Route path="/login" element={<LoginPage />} />}
         {isLoggedIn && <Route path="/add-expense" element={<ExpenseForm />} />}
-        {isLoggedIn && <Route path="/leaderboard" element={<LeaderBoard />} />}
+        {isLoggedIn && isPremium && <Route path="/leaderboard" element={<LeaderBoard />} />}
         {isLoggedIn && <Route path="*" element={<Dashboard />} />}
         {!isLoggedIn && <Route path="/*" element={<LoginPage />} />}
         <Route path="/password/resetpassword/:id" element={<ResetPassword />} />
