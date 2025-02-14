@@ -77,6 +77,28 @@ const Dashboard = () => {
     }
   };
 
+  const [currentpage, setcurrentpage] = useState(1);
+  const expenseperpage = 8;
+  const totalPages = Math.ceil(filterExpenses().length / expenseperpage);
+  const indexOfLastExpense = currentpage * expenseperpage;
+  const indexOfFirstExpense = indexOfLastExpense - expenseperpage;
+  const currentExpenses = expenses.slice(
+    indexOfFirstExpense,
+    indexOfLastExpense
+  );
+
+  const NextPage = () => {
+    if (currentpage < totalPages) {
+      setcurrentpage(currentpage + 1);
+    }
+  };
+
+  const PreviousPage = () => {
+    if (currentpage > 1) {
+      setcurrentpage(currentpage - 1);
+    }
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
       <div className="flex flex-col sm:flex-row items-center justify-between mb-6">
@@ -111,27 +133,27 @@ const Dashboard = () => {
         </select>
       </div>
 
-      <div className="bg-white shadow-md rounded-lg p-6">
-        {filterExpenses().length > 0 ? (
+      <div className="bg-white min-h-96 shadow-md rounded-lg p-6">
+        {currentExpenses.length > 0 ? (
           <ul className="divide-y divide-gray-200">
-            {filterExpenses().map((expense, index) => (
+            {currentExpenses.map((expense, index) => (
               <li
-              key={index}
-              className="border-b flex flex-col md:flex-row justify-between items-center mx-4 border-gray-300 py-2"
-            >
-                  <p>
-                    <strong>Amount:</strong> ₹{expense.amount}
-                  </p>
-                  <p>
-                    <strong>Description:</strong> {expense.description}
-                  </p>
-                  <p>
-                    <strong>Category:</strong> {expense.category}
-                  </p>
-                  <p>
-                    <strong>Date:</strong> {expense.createdAt.split("T")[0]}
-                  </p>
-           
+                key={index}
+                className="border-b flex flex-col md:flex-row justify-between items-center mx-4 border-gray-300 py-2"
+              >
+                <p>
+                  <strong>Amount:</strong> ₹{expense.amount}
+                </p>
+                <p>
+                  <strong>Description:</strong> {expense.description}
+                </p>
+                <p>
+                  <strong>Category:</strong> {expense.category}
+                </p>
+                <p>
+                  <strong>Date:</strong> {expense.createdAt.split("T")[0]}
+                </p>
+
                 <button
                   onClick={() => deleteExpense(expense)}
                   className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition"
@@ -144,6 +166,36 @@ const Dashboard = () => {
         ) : (
           <p className="text-center text-gray-500">No expenses found.</p>
         )}
+      </div>
+      {/* Pagination */}
+      <div className="flex justify-center gap-2 items-center mt-4">
+        <button
+          onClick={PreviousPage}
+          disabled={currentpage === 1}
+          className={`px-4 py-2 rounded-lg transition ${
+            currentpage === 1
+              ? "bg-gray-300"
+              : "bg-blue-600 text-white hover:bg-blue-700"
+          }`}
+        >
+          Prev
+        </button>
+
+        <span className="text-gray-700">
+          Page {currentpage} of {totalPages}
+        </span>
+
+        <button
+          onClick={NextPage}
+          disabled={currentpage === totalPages}
+          className={`px-4 py-2 rounded-lg transition ${
+            currentpage === totalPages
+              ? "bg-gray-300"
+              : "bg-blue-600 text-white hover:bg-blue-700"
+          }`}
+        >
+          Next
+        </button>
       </div>
     </div>
   );
