@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import Context from "../context/store";
 import { useNavigate } from "react-router";
+import axios from "axios";
 
 const Header = () => {
   const { token, settoken, setIsLoggedIn, isPremium, SetisPremium } =
