@@ -1,11 +1,13 @@
 import React, { useContext, useEffect, useState } from "react";
 import Context from "../context/store";
 import axios from "axios";
+import { useNavigate } from "react-router";
 
 export default function LeaderBoard({ ShowLeaderBoard }) {
   const { token, expenses, isLoggedIn } = useContext(Context);
 
   const [sortedUsers, setSortedUsers] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchExpenses = async () => {
@@ -24,12 +26,12 @@ export default function LeaderBoard({ ShowLeaderBoard }) {
           console.warn("No users data received.");
           return;
         }
-  
+
         // Sort the users by name first and then by totalexpense in descending order
         const sortedUsers = [...users].sort((a, b) => {
           return b.totalexpense - a.totalexpense; // Then by totalexpense in descending order
         });
-  
+
         setSortedUsers(sortedUsers); // Store sorted data in state
       } catch (error) {
         console.error("Error fetching expenses:", error);
@@ -40,30 +42,30 @@ export default function LeaderBoard({ ShowLeaderBoard }) {
   }, [isLoggedIn]);
 
   return (
-    <div className="w-full flex flex-col">
-      <button onClick={ShowLeaderBoard} className=" px-4 bg-gray-400 w-fit">
-        back
-      </button>
+    <div className="w-full flex justify-center gap-4">
       {/* Sorted Expenses Section */}
-      <div className="max-w-xl mx-auto bg-white shadow-md rounded p-4 mt-6">
-        <h2 className="text-xl font-bold mb-4">All Users - Total Expenses</h2>
+      <div className="md:w-1/2 w-full px-4 bg-white shadow-md rounded mt-6 p-4">
+        <button onClick={()=>navigate(-1)} className=" text-gray-500 font-bold w-fit hover:text-blue-500">
+         {"<"} Back
+        </button>
+        <h2 className="text-xl font-bold m-4">All Users - Total Expenses</h2>
         {sortedUsers.length > 0 ? (
           <ul>
             {sortedUsers.map((user, index) => (
               <li
                 key={index}
-                className="border-b border-gray-300 py-2 flex flex-col md:flex-row justify-between items-center gap-4"
+                className="border-b border-gray-300 p-4 flex flex-col md:flex-row justify-between items-center gap-4"
               >
                 <p>
                   <strong>Name:</strong> {user.name}
                 </p>
                 <p>
-                  <strong>User ID:</strong> {user.userId}
+                  <strong>User ID:</strong> {user.id}
                 </p>
                 <p>
-                  <strong>Total Expenses:</strong> $
-                  {user.totalexpense}
+                  <strong>Total Expenses:</strong> ${user.totalexpense}
                 </p>
+                
               </li>
             ))}
           </ul>

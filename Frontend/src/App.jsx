@@ -6,6 +6,9 @@ import ExpenseForm from "./components/ExpenseForm";
 import "./App.css";
 import Context from "./context/store";
 import ResetPassword from "./components/ResetPassword";
+import Header from "./components/Header";
+import Dashboard from "./components/Dashboard";
+import LeaderBoard from "./components/LeaderBoard";
 
 function App() {
   const { isLoggedIn, setIsLoggedIn, settoken } = useContext(Context);
@@ -21,11 +24,13 @@ function App() {
 
   return (
     <BrowserRouter>
+    <Header/>
       <Routes>
         {!isLoggedIn && <Route path="/signup" element={<SignUp />} />}
         {!isLoggedIn && <Route path="/login" element={<LoginPage />} />}
-        {isLoggedIn && <Route path="/expense" element={<ExpenseForm />} />}
-        {isLoggedIn && <Route path="*" element={<ExpenseForm />} />}
+        {isLoggedIn && <Route path="/add-expense" element={<ExpenseForm />} />}
+        {isLoggedIn && <Route path="/leaderboard" element={<LeaderBoard />} />}
+        {isLoggedIn && <Route path="*" element={<Dashboard />} />}
         {!isLoggedIn && <Route path="/*" element={<LoginPage />} />}
         <Route path="/password/resetpassword/:id" element={<ResetPassword />} />
       </Routes>
