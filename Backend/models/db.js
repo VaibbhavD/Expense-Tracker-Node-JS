@@ -1,7 +1,8 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const { v4: uuidv4 } = require("uuid");
+require("dotenv").config();
 
-const sequelize = new Sequelize("expense", "root", "Vaibhav@123", {
+const sequelize = new Sequelize(process.env.DB_NAME, "root", process.env.DB_PASSWORD, {
   host: "localhost",
   dialect: "mysql",
   port: 3300,
@@ -92,7 +93,7 @@ const ForgotPasswordRequest = sequelize.define(
   {
     id: {
       type: DataTypes.STRING(36),
-      defaultValue:  () => uuidv4(),
+      defaultValue: () => uuidv4(),
       primaryKey: true,
     },
     userId: {
