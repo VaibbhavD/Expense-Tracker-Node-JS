@@ -3,7 +3,7 @@ import Context from "../context/store";
 import axios from "axios";
 import { useNavigate } from "react-router";
 
-export default function LeaderBoard({ ShowLeaderBoard }) {
+export default function LeaderBoard() {
   const { token, expenses, isLoggedIn } = useContext(Context);
 
   const [sortedUsers, setSortedUsers] = useState([]);
@@ -13,7 +13,7 @@ export default function LeaderBoard({ ShowLeaderBoard }) {
     const fetchExpenses = async () => {
       try {
         const res = await axios.post(
-          "http://localhost:4000/getallusers",
+          `${import.meta.env.VITE_BASE_URL}/getallusers`,
           {},
           {
             headers: {
@@ -45,8 +45,11 @@ export default function LeaderBoard({ ShowLeaderBoard }) {
     <div className="w-full flex justify-center gap-4">
       {/* Sorted Expenses Section */}
       <div className="md:w-1/2 w-full px-4 bg-white shadow-md rounded mt-6 p-4">
-        <button onClick={()=>navigate(-1)} className=" text-gray-500 font-bold w-fit hover:text-blue-500">
-         {"<"} Back
+        <button
+          onClick={() => navigate(-1)}
+          className=" text-gray-500 font-bold w-fit hover:text-blue-500"
+        >
+          {"<"} Back
         </button>
         <h2 className="text-xl font-bold m-4">All Users - Total Expenses</h2>
         {sortedUsers.length > 0 ? (
@@ -65,7 +68,6 @@ export default function LeaderBoard({ ShowLeaderBoard }) {
                 <p>
                   <strong>Total Expenses:</strong> ${user.totalexpense}
                 </p>
-                
               </li>
             ))}
           </ul>

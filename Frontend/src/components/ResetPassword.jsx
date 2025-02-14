@@ -16,7 +16,7 @@ const ResetPassword = () => {
     const verifyResetLink = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:4000/resetpassword/verify/${id}`
+          `${import.meta.env.VITE_BASE_URL}/resetpassword/verify/${id}`
         );
         if (response.status === 200) {
           setValidRequest(true);
@@ -42,7 +42,7 @@ const ResetPassword = () => {
 
     try {
       const response = await axios.post(
-        `http://localhost:4000/password/resetpassword`,
+        `${import.meta.env.VITE_BASE_URL}/password/resetpassword`,
         {
           id,
           newPassword,

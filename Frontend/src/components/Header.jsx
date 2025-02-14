@@ -18,7 +18,7 @@ const Header = () => {
   const handleBuyPremium = async () => {
     try {
       const res = await axios.post(
-        "http://localhost:4000/buypremium",
+        `${import.meta.env.VITE_BASE_URL}/buypremium`,
         {},
         {
           headers: {
@@ -33,7 +33,7 @@ const Header = () => {
         handler: async function (response) {
           try {
             await axios.post(
-              "http://localhost:4000/buypremium/updatestatus",
+              `${import.meta.env.VITE_BASE_URL}/buypremium/updatestatus`,
               {
                 order_id: options.order_id,
                 payment_id: response.razorpay_payment_id,

@@ -13,7 +13,7 @@ const Dashboard = () => {
     const fetchExpenses = async () => {
       try {
         const res = await axios.post(
-          "http://localhost:4000/get-expenses",
+          `${import.meta.env.VITE_BASE_URL}/get-expenses`,
           {},
           {
             headers: { Authorization: token },
@@ -28,7 +28,7 @@ const Dashboard = () => {
     const getPremiumState = async () => {
       try {
         const res = await axios.post(
-          "http://localhost:4000/Getpremium_state",
+          `${import.meta.env.VITE_BASE_URL}/Getpremium_state`,
           {},
           {
             headers: { Authorization: token },
@@ -60,7 +60,7 @@ const Dashboard = () => {
   const deleteExpense = async (expense) => {
     try {
       const res = await axios.post(
-        "http://localhost:4000/delete-expense",
+        `${import.meta.env.VITE_BASE_URL}/delete-expense`,
         expense,
         {
           headers: { Authorization: token },

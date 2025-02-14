@@ -21,7 +21,7 @@ const ExpenseForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const res = await axios.post(
-      "http://localhost:4000/add-expense",
+      `${import.meta.env.VITE_BASE_URL}/add-expense`,
       formData,
       {
         headers: {

@@ -1,4 +1,9 @@
-const { User, Expenses, Order, ForgotPasswordRequest } = require("../models/db");
+const {
+  User,
+  Expenses,
+  Order,
+  ForgotPasswordRequest,
+} = require("../models/db");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Razorpay = require("razorpay");
@@ -369,12 +374,12 @@ exports.forgetPassword = async (req, res) => {
     const resetToken = uuidv4();
     await ForgotPasswordRequest.create({ id: resetToken, userId: user.id });
 
-    const resetUrl = `http://localhost:5173/password/resetpassword/${resetToken}`;
+    const resetUrl = `${process.env.BASE_URL}/password/resetpassword/${resetToken}`;
 
     // Set up the Brevo API client
     const defaultClient = SibApiV3Sdk.ApiClient.instance;
     const apiKey = defaultClient.authentications["api-key"];
-    apiKey.apiKey =process.env.SENDINBLUE_API_KEY ; // Add this key in your .env file
+    apiKey.apiKey = process.env.SENDINBLUE_API_KEY; // Add this key in your .env file
 
     // Create the email details
     const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
@@ -407,47 +412,41 @@ exports.forgetPassword = async (req, res) => {
 
 exports.ResetPassVerifyLink = async (req, res) => {
   try {
-    const{id} = req.params;
+    const { id } = req.params;
     const request = await ForgotPasswordRequest.findByPk(id);
     if (!request) {
       return res.status(404).json({ message: "Invalid link" });
     }
-    if(!request.isActive)
-    {
-      return res.status(400).json({ message: "Link is expired"})
+    if (!request.isActive) {
+      return res.status(400).json({ message: "Link is expired" });
     }
-    
+
     return res.status(200).json({ message: "Link is valid" });
-        
-    
   } catch (error) {
     console.error(error);
     res
       .status(500)
       .json({ message: "An error occurred while processing the request" });
   }
+};
 
-}
-
-exports.Resetpassword=async(req,res)=>{
+exports.Resetpassword = async (req, res) => {
   try {
-    const{id,newPassword} = req.body;
-    const userReq=await ForgotPasswordRequest.findByPk(id);
-    const user=await User.findByPk(userReq.userId);
+    const { id, newPassword } = req.body;
+    const userReq = await ForgotPasswordRequest.findByPk(id);
+    const user = await User.findByPk(userReq.userId);
     const salt = await bcrypt.genSalt(10);
     const hashPassword = await bcrypt.hash(newPassword, salt);
-    user.password=hashPassword;
-    userReq.isActive=false;
+    user.password = hashPassword;
+    userReq.isActive = false;
     await userReq.save();
     await user.save();
     // await user_id.destroy();
-    return res.status(200).json({message:"Password Updated Successfully"});
-    
+    return res.status(200).json({ message: "Password Updated Successfully" });
   } catch (error) {
     console.error(error);
     res
       .status(500)
       .json({ message: "An error occurred while processing the request" });
-    
   }
-}
+};
