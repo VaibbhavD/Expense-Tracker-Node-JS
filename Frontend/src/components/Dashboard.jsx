@@ -44,7 +44,7 @@ const Dashboard = () => {
     getPremiumState();
   }, [isLoggedIn]);
 
-  const filterExpenses = () => {
+  function filterExpenses() {
     const today = new Date();
     return expenses.filter((expense) => {
       const expenseDate = new Date(expense.createdAt);
@@ -55,7 +55,7 @@ const Dashboard = () => {
       if (filter === "monthly") return diffDays < 30;
       return true;
     });
-  };
+  }
 
   const deleteExpense = async (expense) => {
     try {
@@ -99,6 +99,26 @@ const Dashboard = () => {
     }
   };
 
+  const DownloadExpenses = async () => {
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/dowload_expenses`,
+        {
+          headers: { Authorization: token },
+        }
+      );
+
+      if (res.data.FileURL) {
+        // Open in new tab
+        window.open(res.data.FileURL, "_blank");
+        alert("Expense Download successfully");
+      }
+    } catch (error) {
+      console.error("Error fetching expenses:", error);
+      alert(error);
+    }
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
       <div className="flex flex-col sm:flex-row items-center justify-between mb-6">
@@ -135,34 +155,46 @@ const Dashboard = () => {
 
       <div className="bg-white min-h-96 shadow-md rounded-lg p-6">
         {currentExpenses.length > 0 ? (
-          <ul className="divide-y divide-gray-200">
-            {currentExpenses.map((expense, index) => (
-              <li
-                key={index}
-                className="border-b flex flex-col md:flex-row justify-between items-center mx-4 border-gray-300 py-2"
-              >
-                <p>
-                  <strong>Amount:</strong> ₹{expense.amount}
-                </p>
-                <p>
-                  <strong>Description:</strong> {expense.description}
-                </p>
-                <p>
-                  <strong>Category:</strong> {expense.category}
-                </p>
-                <p>
-                  <strong>Date:</strong> {expense.createdAt.split("T")[0]}
-                </p>
-
-                <button
-                  onClick={() => deleteExpense(expense)}
-                  className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition"
+          <>
+            <ul className="divide-y divide-gray-200">
+              {currentExpenses.map((expense, index) => (
+                <li
+                  key={index}
+                  className="border-b flex flex-col md:flex-row justify-between items-center mx-4 border-gray-300 py-2"
                 >
-                  Delete
+                  <p>
+                    <strong>Amount:</strong> ₹{expense.amount}
+                  </p>
+                  <p>
+                    <strong>Description:</strong> {expense.description}
+                  </p>
+                  <p>
+                    <strong>Category:</strong> {expense.category}
+                  </p>
+                  <p>
+                    <strong>Date:</strong> {expense.createdAt.split("T")[0]}
+                  </p>
+
+                  <button
+                    onClick={() => deleteExpense(expense)}
+                    className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition"
+                  >
+                    Delete
+                  </button>
+                </li>
+              ))}
+            </ul>
+            {isPremium && (
+              <div className="w-full pt-2 flex justify-end h-full items-end text-white">
+                <button
+                  className="p-2 bg-green-500 rounded-md"
+                  onClick={DownloadExpenses}
+                >
+                  Download
                 </button>
-              </li>
-            ))}
-          </ul>
+              </div>
+            )}
+          </>
         ) : (
           <p className="text-center text-gray-500">No expenses found.</p>
         )}
