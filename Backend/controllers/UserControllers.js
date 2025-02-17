@@ -1,3 +1,4 @@
+const { json } = require("body-parser");
 const {
   User,
   Expenses,
@@ -9,6 +10,7 @@ const jwt = require("jsonwebtoken");
 const Razorpay = require("razorpay");
 const SibApiV3Sdk = require("sib-api-v3-sdk");
 const { v4: uuidv4 } = require("uuid");
+const AWS = require("aws-sdk");
 require("dotenv").config();
 
 const GetJwtToken = (user) => {
@@ -443,6 +445,51 @@ exports.Resetpassword = async (req, res) => {
     await user.save();
     // await user_id.destroy();
     return res.status(200).json({ message: "Password Updated Successfully" });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "An error occurred while processing the request" });
+  }
+};
+
+function uploadToS3(data, filename) {
+  const s3 = new AWS.S3({
+    accessKeyId: process.env.AWS_ACCESS_KEY,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  });
+
+  const params = {
+    Bucket: process.env.AWS_BUCKET_NAME,
+    Key: filename,
+    Body: data,
+    ACL: "public-read",
+  };
+
+  return new Promise((resolve, reject) => {
+    s3.upload(params, (err, data) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(data.Location);
+      }
+    });
+  });
+}
+
+exports.DownloadExpenses = async (req, res) => {
+  try {
+    const { userId } = req.user;
+    const UserExpenses = await Expenses.findAll({ where: { user_id: userId } });
+    if (!UserExpenses) {
+      return res.status(404).json({ message: "No Expenses Found" });
+    }
+    const StringExpenses = JSON.stringify(UserExpenses);
+    const filename = `Expenses${userId}/${new Date()}.txt`;
+    const FileURL = await uploadToS3(StringExpenses, filename);
+    return res
+      .status(200)
+      .json({ message: "Expenses Downloaded Successfully", FileURL });
   } catch (error) {
     console.error(error);
     res
