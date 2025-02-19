@@ -31,23 +31,23 @@ app.use(cors()); // Enable CORS
 app.use(helmet()); // Enable Helmet
 app.use(compression());
 // Define a route
-app.get("/", (req, res) => {
+app.get("/api", (req, res) => {
   res.send("Hello World");
 });
 
-app.post("/signup", SignUp);
-app.post("/login", Login);
-app.post("/forgotpassword", forgetPassword);
-app.post("/add-expense", UserAuthentication, AddExpense);
-app.post("/delete-expense", UserAuthentication, deleteExpense);
-app.post("/get-expenses", UserAuthentication, GetExpenses);
-app.post("/buypremium", UserAuthentication, BuyPremium);
-app.post("/getallusers", UserAuthentication, GetallUsers);
-app.post("/buypremium/updatestatus", UserAuthentication, UpdatePremium);
-app.post("/Getpremium_state", UserAuthentication, GetUserPremiumStatus);
-app.get("/resetpassword/verify/:id", ResetPassVerifyLink);
-app.post("/password/resetpassword", Resetpassword);
-app.get("/dowload_expenses",UserAuthentication, DownloadExpenses);
+app.post("/api/signup", SignUp);
+app.post("/api/login", Login);
+app.post("/api/forgotpassword", forgetPassword);
+app.post("/api/add-expense", UserAuthentication, AddExpense);
+app.post("/api/delete-expense", UserAuthentication, deleteExpense);
+app.post("/api/get-expenses", UserAuthentication, GetExpenses);
+app.post("/api/buypremium", UserAuthentication, BuyPremium);
+app.post("/api/getallusers", UserAuthentication, GetallUsers);
+app.post("/api/buypremium/updatestatus", UserAuthentication, UpdatePremium);
+app.post("/api/Getpremium_state", UserAuthentication, GetUserPremiumStatus);
+app.get("/api/resetpassword/verify/:id", ResetPassVerifyLink);
+app.post("/api/password/resetpassword", Resetpassword);
+app.get("/api/dowload_expenses",UserAuthentication, DownloadExpenses);
 
 // Sync the database and start the server
 sequelize
